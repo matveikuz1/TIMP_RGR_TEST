@@ -18,12 +18,24 @@ export function AuthProvider({ children }) {
   }, []);
 
   const login = async (email, password) => {
-    const { data } = await api.post('/auth/login', { email, password});
+    const { data } = await api.post('/auth/login', { email, password });
+    return data;
+  };
+
+  const verifyLogin = async (email, code) => {
+    const { data } = await api.post('/auth/verify-login', { email, code });
     setUser(data);
+    return data;
   };
 
   const register = async (username, email, password) => {
-    await api.post('/auth/register', { username, email, password});
+    const { data } = await api.post('/auth/register', { username, email, password });
+    return data;
+  };
+
+  const verifyRegister = async (email, code) => {
+    const { data } = await api.post('/auth/verify-register', { email, code });
+    return data;
   };
 
   const logout = async () => {
@@ -31,9 +43,22 @@ export function AuthProvider({ children }) {
     setUser(null);
   };
 
-  return <AuthContext.Provider value={{ user, loading, login, register, logout }}>{children}</AuthContext.Provider>;
+  return (
+    <AuthContext.Provider value={{ 
+      user, 
+      loading, 
+      login, 
+      verifyLogin,
+      register, 
+      verifyRegister,
+      logout 
+    }}>
+      {children}
+    </AuthContext.Provider>
+  );
 }
 
+// ✅ ВАЖНО: export useAuth должен быть здесь!
 export function useAuth() {
   return useContext(AuthContext);
 }

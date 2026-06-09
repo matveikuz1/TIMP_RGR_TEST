@@ -7,6 +7,48 @@
   gap: 24px;
 }
 
+/* Стили для страницы 404 */
+.not-found-container {
+    min-height: calc(100vh - 200px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 20px;
+}
+
+.not-found-content {
+    text-align: center;
+    max-width: 500px;
+    width: 100%;
+}
+
+.not-found-code {
+    font-size: 120px;
+    font-weight: 700;
+    color: var(--accent);
+    margin: 0 0 20px 0;
+    line-height: 1;
+}
+
+.not-found-title {
+    font-size: 28px;
+    font-weight: 600;
+    margin: 0 0 15px 0;
+    color: var(--text);
+}
+
+.not-found-text {
+    color: var(--muted);
+    margin-bottom: 30px;
+    line-height: 1.5;
+}
+
+/* Кнопка на странице 404 */
+.not-found-content .button {
+    display: inline-block;
+    margin-top: 10px;
+    padding: 12px 24px;
+}
 .navbar {
   display: flex;
   align-items: center;
@@ -274,6 +316,16 @@ button:disabled {
   width: min(420px, 100%);
 }
 
+.button.success {
+  background: var(--success);
+  color: white;
+}
+
+
+.button.success:hover {
+  background: #128a3a;
+}
+
 .form-error {
   color: var(--danger);
   font-weight: 600;
@@ -376,6 +428,11 @@ button:disabled {
 .recaptcha-hint {
   font-size: 12px;
   color: var(--muted);
+}
+
+.button.warning {
+    background: var(--warning);
+    color: white;
 }
 
 @media (max-width: 768px) {

@@ -76,7 +76,7 @@ export default function DashboardPage() {
     setError('');
     setLoading(true);
     try {
-      const { data } = await api.post(`/files/${selectedFileId}/links`, payload);
+      await api.post(`/files/${selectedFileId}/links`, payload);
       await loadLinks();
       setLinkModalOpen(false);
       setSelectedFileId(null);
@@ -106,6 +106,32 @@ export default function DashboardPage() {
     setLoading(true);
     try {
       await api.delete(`/files/links/${linkId}`);
+      await loadLinks();
+    } catch (err) {
+      setError(err?.response?.data?.message || 'Не удалось отозвать ссылку');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const restoreLink = async (linkId) => {
+    setError('');
+    setLoading(true);
+    try {
+      await api.post(`/files/links/${linkId}/restore`);
+      await loadLinks();
+    } catch (err) {
+      setError(err?.response?.data?.message || 'Не удалось восстановить ссылку');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const permanentDeleteLink = async (linkId) => {
+    setError('');
+    setLoading(true);
+    try {
+      await api.delete(`/files/links/${linkId}/permanent`);
       await loadLinks();
     } catch (err) {
       setError(err?.response?.data?.message || 'Не удалось удалить ссылку');
@@ -165,13 +191,14 @@ export default function DashboardPage() {
             Файлов: {files.length} · Общий размер: {formatBytes(totalSize)}
           </p>
         </div>
-        <label className="form-field" style={{ maxWidth: 240 }}>
+        <label className="form-field" style={{ maxWidth: 640 }}>
           <span className="form-label">Загрузить файл</span>
           <input type="file" onChange={upload} />
         </label>
       </div>
       {loading && <LoadingSpinner />}
       {error && <p className="form-error">{error}</p>}
+      
       <div className="card table-wrapper">
         <table className="table">
           <thead>
@@ -204,6 +231,7 @@ export default function DashboardPage() {
           </tbody>
         </table>
       </div>
+      
       <div className="stack">
         <div className="card-header">
           <h3 className="page-title">Мои ссылки</h3>
@@ -226,15 +254,24 @@ export default function DashboardPage() {
                 const expiresDate = new Date(link.expires_at);
                 const expired = expiresDate.getTime() < Date.now();
                 const limitReached = link.max_uses > 0 && link.used_count >= link.max_uses;
-                const status = link.revoked
-                  ? 'Отозвана'
-                  : expired
-                    ? 'Истекла'
-                    : limitReached
-                      ? 'Лимит исчерпан'
-                      : 'Активна';
-                const badgeClass = link.revoked ? 'danger' : expired ? 'warning' : limitReached ? 'danger' : 'success';
+                const isRevoked = link.revoked;
+                
+                let status = 'Активна';
+                let badgeClass = 'success';
+                
+                if (isRevoked) {
+                  status = 'Отозвана';
+                  badgeClass = 'warning';
+                } else if (expired) {
+                  status = 'Истекла';
+                  badgeClass = 'danger';
+                } else if (limitReached) {
+                  status = 'Лимит исчерпан';
+                  badgeClass = 'danger';
+                }
+                
                 const usageLimit = link.max_uses > 0 ? link.max_uses : '∞';
+                
                 return (
                   <tr key={link.id}>
                     <td>{file?.original_name || `Файл #${link.file_id}`}</td>
@@ -248,13 +285,23 @@ export default function DashboardPage() {
                     <td>{link.used_count} / {usageLimit}</td>
                     <td><span className={`badge ${badgeClass}`}>{status}</span></td>
                     <td>
-                      <button
-                        type="button"
-                        className={limitReached ? 'danger' : 'secondary'}
-                        onClick={() => revokeLink(link.id)}
-                      >
-                        Удалить
-                      </button>
+                      <div className="table-actions">
+                        {!isRevoked && !expired && !limitReached && (
+                          <button type="button" className="warning" onClick={() => revokeLink(link.id)}>
+                            Отозвать
+                          </button>
+                        )}
+                        {isRevoked && !expired && !limitReached && (
+                          <button type="button" className="success" onClick={() => restoreLink(link.id)}>
+                            Восстановить
+                          </button>
+                        )}
+                        {(isRevoked || expired || limitReached) && (
+                          <button type="button" className="danger" onClick={() => permanentDeleteLink(link.id)}>
+                            Удалить
+                          </button>
+                        )}
+                      </div>
                     </td>
                   </tr>
                 );
@@ -268,6 +315,7 @@ export default function DashboardPage() {
           </table>
         </div>
       </div>
+      
       <LinkCreateModal
         open={linkModalOpen}
         onClose={() => {

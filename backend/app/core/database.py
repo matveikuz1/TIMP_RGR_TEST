@@ -3,6 +3,7 @@ from sqlalchemy.orm import sessionmaker, DeclarativeBase
 
 from app.core.config import settings
 
+print(f"[DEBUG] DATABASE_URL from settings: {settings.database_url}")
 
 class Base(DeclarativeBase):
     pass

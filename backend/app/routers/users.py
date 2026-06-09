@@ -11,6 +11,8 @@ from app.core.security import hash_password, verify_password
 router = APIRouter(prefix='/api/users', tags=['users'])
 
 
+from app.core.security import revoke_all_user_refresh_tokens
+
 @router.put('/profile')
 def update_profile(payload: ProfileUpdateRequest, current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
     if not verify_password(payload.old_password, current_user.password_hash):
@@ -27,6 +29,8 @@ def update_profile(payload: ProfileUpdateRequest, current_user: User = Depends(g
 
     if payload.new_password:
         current_user.password_hash = hash_password(payload.new_password)
+        
+        revoke_all_user_refresh_tokens(db, current_user.id)
 
     db.commit()
     db.refresh(current_user)

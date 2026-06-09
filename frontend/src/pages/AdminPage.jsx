@@ -147,6 +147,7 @@ export default function AdminPage() {
           <table className="table">
             <thead>
               <tr>
+                <th>ID</th>
                 <th>Пользователь</th>
                 <th>Email</th>
                 <th>Роль</th>
@@ -157,6 +158,7 @@ export default function AdminPage() {
             <tbody>
               {users.map((user) => (
                 <tr key={user.id}>
+                  <td>{user.id}</td> 
                   <td>{user.username}</td>
                   <td>{user.email}</td>
                   <td>{user.role}</td>

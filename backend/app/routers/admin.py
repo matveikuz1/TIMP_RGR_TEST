@@ -5,7 +5,7 @@ from app.core.database import get_db
 from app.core.deps import require_roles
 from app.core.errors import AppException
 from app.core.models import User, File
-
+from fastapi import APIRouter, Depends, Query, status, Response
 router = APIRouter(prefix='/api/admin', tags=['admin'])
 
 
@@ -48,21 +48,19 @@ def list_all_files(_: User = Depends(require_roles('admin', 'auditor')), db: Ses
     return [_file_to_dict(file_row) for file_row in db.query(File).all()]
 
 
-@router.post('/users/{user_id}/block')
+@router.post('/users/{user_id}/block', status_code=status.HTTP_204_NO_CONTENT)
 def block_user(user_id: int, _: User = Depends(require_roles('admin')), db: Session = Depends(get_db)):
     user = db.query(User).filter(User.id == user_id).first()
     if not user:
         raise AppException('NOT_FOUND', 'Пользователь не найден', 404)
     user.is_blocked = True
     db.commit()
-    return {'ok': True}
-
-
-@router.post('/users/{user_id}/unblock')
+    return Response(status_code=status.HTTP_204_NO_CONTENT)
+@router.post('/users/{user_id}/unblock', status_code=status.HTTP_204_NO_CONTENT)
 def unblock_user(user_id: int, _: User = Depends(require_roles('admin')), db: Session = Depends(get_db)):
     user = db.query(User).filter(User.id == user_id).first()
     if not user:
         raise AppException('NOT_FOUND', 'Пользователь не найден', 404)
     user.is_blocked = False
     db.commit()
-    return {'ok': True}
+    return Response(status_code=status.HTTP_204_NO_CONTENT)

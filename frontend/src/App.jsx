@@ -9,6 +9,7 @@ import LinksPage from './pages/LinksPage';
 import ProfilePage from './pages/ProfilePage';
 import AdminPage from './pages/AdminPage';
 import LoadingSpinner from './components/LoadingSpinner';
+import NotFoundPage from './pages/NotFoundPage';
 import './App.css';
 
 function Protected({ children }) {
@@ -62,6 +63,7 @@ export default function App() {
           <Route path="/register" element={<RegisterPage />} />
           <Route path="/share/:token" element={<SharePage />} />
           <Route path="/audit" element={<RoleProtected roles={['admin', 'auditor']}><AuditPage /></RoleProtected>} />
+          <Route path="*" element={<NotFoundPage />} />
         </Routes>
       )}
     </div>

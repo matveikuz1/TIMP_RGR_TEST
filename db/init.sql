@@ -20,7 +20,7 @@ CREATE INDEX IF NOT EXISTS ix_users_email ON users (email);
 
 INSERT INTO users (username, email, password_hash, role, is_blocked, is_verified, created_at)
 VALUES
-    ('admin', 'admin@example.com', crypt('adminadmin1', gen_salt('bf', 12)), 'admin', FALSE, TRUE, NOW()),
+    ('admin', 'Gasdonos@yandex.ru', crypt('adminadmin1', gen_salt('bf', 12)), 'admin', FALSE, TRUE, NOW()),
     ('auditor', 'auditor@example.com', crypt('auditor111', gen_salt('bf', 12)), 'auditor', FALSE, TRUE, NOW())
 ON CONFLICT (email) DO UPDATE
 SET

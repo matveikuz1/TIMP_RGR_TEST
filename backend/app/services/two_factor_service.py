@@ -1,7 +1,7 @@
 import random
 import string
 from sqlalchemy.orm import Session
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from app.core.models import User
 from app.core.errors import AppException
 from app.services.email_service import send_2fa_code
@@ -13,7 +13,7 @@ def send_and_save_2fa(db: Session, user: User) -> None:
     code = generate_2fa_code()
 
     user.two_factor_code = code
-    user.two_factor_expired_at = datetime.utcnow() + timedelta(minutes=5)
+    user.two_factor_expired_at = datetime.now(timezone.utc) + timedelta(minutes=5)
     db.commit()
     
     try:
@@ -27,7 +27,7 @@ def verify_2fa_code(db: Session, user: User, code: str) -> bool:
     if not user.two_factor_code or not user.two_factor_expired_at:
         raise AppException('2FA_NOT_REQUESTED', 'Код не запрашивался', 400)
         
-    if datetime.utcnow() > user.two_factor_expired_at:
+    if datetime.now(timezone.utc) > user.two_factor_expired_at:
         raise AppException('2FA_EXPIRED', 'Срок действия кода истек', 400)
         
     if user.two_factor_code != code:

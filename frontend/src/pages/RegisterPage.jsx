@@ -25,9 +25,26 @@ export default function RegisterPage() {
     return '';
   };
 
+const validateEmail = (email) => {
+    const emailRegex = /^[^\s@]+@([^\s@]+\.)+[^\s@]+$/;
+    if (!email) {
+        return 'Введите email адрес';
+    }
+    if (!emailRegex.test(email)) {
+        return 'Введите адрес в формате email@example.com';
+    }
+    return '';
+};
+
   const onSubmit = async (e) => {
     e.preventDefault();
     setError('');
+
+const emailError = validateEmail(email);
+    if (emailError) {
+        setError(emailError);
+        return;
+    }
     
     const validationError = validatePassword(password);
     if (validationError) {
