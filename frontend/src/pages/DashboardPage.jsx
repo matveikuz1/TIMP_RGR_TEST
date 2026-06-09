@@ -150,7 +150,7 @@ export default function DashboardPage() {
         setFiles(filesResponse.data);
         setLinks(linksResponse.data);
       })
-      .catch((e) => { if (!cancelled) setError(e?.response?.data?.message || 'Ошибка загрузки данных'); })
+      .catch(() => { if (!cancelled) setError('Ошибка загрузки данных'); })
       .finally(() => { if (!cancelled) setLoading(false); });
     return () => { cancelled = true; };
   }, [user]);

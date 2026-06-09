@@ -7,9 +7,10 @@ export default function LinkCreateModal({ open, onClose, onCreate }) {
     return today.toISOString().slice(0, 10);
   }, []);
   const defaultDate = useMemo(() => {
-    const nextDay = new Date(Date.now() + 24 * 60 * 60 * 1000);
+    const nextDay = new Date();
+    nextDay.setDate(nextDay.getDate() + 1);
     return nextDay.toISOString().slice(0, 10);
-  }, []);
+}, []);
   const [endDate, setEndDate] = useState(defaultDate);
   const [maxUses, setMaxUses] = useState(1);
   const [unlimited, setUnlimited] = useState(false);

@@ -14,7 +14,7 @@ os.environ['COOKIE_SECURE'] = 'false'
 os.environ['TESTING'] = 'true'
 
 os.environ['DATABASE_URL'] = 'sqlite:///./test.db'
-os.environ['COOKIE_SECURE'] = 'fals
+os.environ['COOKIE_SECURE'] = 'false'
 
 from fastapi.testclient import TestClient
 from app.main import app
