@@ -19,8 +19,8 @@ export default function DashboardPage() {
     try {
       const { data } = await api.get('/files');
       setFiles(data);
-    } catch (err) {
-      setError(err?.response?.data?.message || 'Не удалось загрузить файлы');
+    } catch {
+      setError('Не удалось загрузить файлы');
     } finally {
       setLoading(false);
     }
@@ -31,8 +31,8 @@ export default function DashboardPage() {
     try {
       const { data } = await api.get('/links');
       setLinks(data);
-    } catch (err) {
-      setError(err?.response?.data?.message || 'Не удалось загрузить ссылки');
+    } catch {
+      setError('Не удалось загрузить ссылки');
     } finally {
       setLoading(false);
     }
@@ -43,7 +43,7 @@ export default function DashboardPage() {
     try {
       const { data } = await api.get('/links');
       setLinks(data);
-    } catch () {
+    } catch {
       // ignore background refresh errors
     }
   }, [user]);
@@ -176,7 +176,7 @@ export default function DashboardPage() {
       } else {
         window.prompt('Скопируйте ссылку:', url);
       }
-    } catch () {
+    } catch {
       setError('Не удалось скопировать ссылку');
     }
   };
