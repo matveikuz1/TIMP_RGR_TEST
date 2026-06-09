@@ -1,3 +1,4 @@
+import os
 import random
 import string
 from sqlalchemy.orm import Session
@@ -14,6 +15,7 @@ def send_and_save_2fa(db: Session, user: User) -> None:
         user.is_verified = True
         db.commit()
         return
+    
     code = generate_2fa_code()
 
     user.two_factor_code = code
@@ -23,7 +25,6 @@ def send_and_save_2fa(db: Session, user: User) -> None:
     try:
         send_2fa_code(user.email, code)
     except Exception as e:
-
         print(f"КРИТИЧЕСКАЯ ОШИБКА ПОЧТЫ: {e}")
         print(f"КОД ДЛЯ СТРАХОВКИ (DEV): {code}")
 

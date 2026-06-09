@@ -19,8 +19,8 @@ export default function DashboardPage() {
     try {
       const { data } = await api.get('/files');
       setFiles(data);
-    } catch (e) {
-      setError(e?.response?.data?.message || 'Не удалось загрузить файлы');
+    } catch (err) {
+      setError(err?.response?.data?.message || 'Не удалось загрузить файлы');
     } finally {
       setLoading(false);
     }
@@ -31,8 +31,8 @@ export default function DashboardPage() {
     try {
       const { data } = await api.get('/links');
       setLinks(data);
-    } catch (e) {
-      setError(e?.response?.data?.message || 'Не удалось загрузить ссылки');
+    } catch (err) {
+      setError(err?.response?.data?.message || 'Не удалось загрузить ссылки');
     } finally {
       setLoading(false);
     }
@@ -43,7 +43,7 @@ export default function DashboardPage() {
     try {
       const { data } = await api.get('/links');
       setLinks(data);
-    } catch (e) {
+    } catch () {
       // ignore background refresh errors
     }
   }, [user]);
@@ -143,7 +143,6 @@ export default function DashboardPage() {
   useEffect(() => {
     if (!user) return;
     let cancelled = false;
-    setLoading(true);
     Promise.all([api.get('/files'), api.get('/links')])
       .then(([filesResponse, linksResponse]) => {
         if (cancelled) return;
@@ -177,7 +176,7 @@ export default function DashboardPage() {
       } else {
         window.prompt('Скопируйте ссылку:', url);
       }
-    } catch (e) {
+    } catch () {
       setError('Не удалось скопировать ссылку');
     }
   };
@@ -198,7 +197,7 @@ export default function DashboardPage() {
       </div>
       {loading && <LoadingSpinner />}
       {error && <p className="form-error">{error}</p>}
-      
+
       <div className="card table-wrapper">
         <table className="table">
           <thead>
@@ -231,7 +230,7 @@ export default function DashboardPage() {
           </tbody>
         </table>
       </div>
-      
+
       <div className="stack">
         <div className="card-header">
           <h3 className="page-title">Мои ссылки</h3>
@@ -252,13 +251,14 @@ export default function DashboardPage() {
               {links.map((link) => {
                 const file = fileLookup[link.file_id];
                 const expiresDate = new Date(link.expires_at);
-                const expired = expiresDate.getTime() < Date.now();
+                const now = new Date();
+                const expired = expiresDate.getTime() < now.getTime();
                 const limitReached = link.max_uses > 0 && link.used_count >= link.max_uses;
                 const isRevoked = link.revoked;
-                
+
                 let status = 'Активна';
                 let badgeClass = 'success';
-                
+
                 if (isRevoked) {
                   status = 'Отозвана';
                   badgeClass = 'warning';
@@ -269,9 +269,9 @@ export default function DashboardPage() {
                   status = 'Лимит исчерпан';
                   badgeClass = 'danger';
                 }
-                
+
                 const usageLimit = link.max_uses > 0 ? link.max_uses : '∞';
-                
+
                 return (
                   <tr key={link.id}>
                     <td>{file?.original_name || `Файл #${link.file_id}`}</td>
@@ -315,7 +315,7 @@ export default function DashboardPage() {
           </table>
         </div>
       </div>
-      
+
       <LinkCreateModal
         open={linkModalOpen}
         onClose={() => {
